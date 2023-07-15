@@ -1,9 +1,15 @@
 ﻿using AuthenticationAuthorizationProject.Constants;
+using AuthenticationAuthorizationProject.DataAccess.Data;
+using AuthenticationAuthorizationProject.DataAccess.Repository.IRepository;
+using AuthenticationAuthorizationProject.Dtos.GroupDto;
+using AuthenticationAuthorizationProject.Dtos.GroupPermissionDto;
+using AuthenticationAuthorizationProject.Dtos.PermissionDto;
 using AuthenticationAuthorizationProject.Models;
 using AuthenticationAuthorizationProject.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Security.Claims;
 
 namespace AuthenticationAuthorizationProject.Controllers
@@ -14,11 +20,13 @@ namespace AuthenticationAuthorizationProject.Controllers
     {
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public RolesController(RoleManager<IdentityRole> roleManager , UserManager<ApplicationUser> userManager)
+        public RolesController(RoleManager<IdentityRole> roleManager , UserManager<ApplicationUser> userManager , IUnitOfWork unitOfWork)
         {
             this._roleManager = roleManager;
             this._userManager = userManager;
+            this._unitOfWork = unitOfWork;
         }
         [HttpGet]
         public async Task<IActionResult> GetAllRoles()
@@ -69,7 +77,7 @@ namespace AuthenticationAuthorizationProject.Controllers
 
             return Ok(viewModel);
         }
-        [HttpPost("addpermissions")]
+        [HttpPost("addpermissions/Claims")]
         public async Task<IActionResult> ManagePermissions(PermissionsFormViewModel model)
         {
             var role = await _roleManager.FindByIdAsync(model.RoleId);
@@ -89,5 +97,71 @@ namespace AuthenticationAuthorizationProject.Controllers
 
             return Ok(model);
         }
+        [HttpGet("getpermissions")]
+        public async Task<IActionResult> GetPermissions()
+        {
+            var permissions = await _unitOfWork.Permission.GetAll();
+            return Ok(permissions);
+        }
+        [HttpPost("permissions")]
+        public IActionResult AddPermission([FromBody] AddPermissionDto permissionDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var permission = new Permission
+            {
+                Name = permissionDto.Name
+            };
+
+            _unitOfWork.Permission.Add(permission);
+            _unitOfWork.Save();
+
+            return Ok(permission);
+        }
+        [HttpGet("getgroup")]
+        public async Task<IActionResult> GetGroups()
+        {
+            var groups = await _unitOfWork.Group.GetAll();
+            return Ok(groups);
+        }
+        [HttpPost("addgroup")]
+        public async Task<IActionResult> AddGroup([FromBody] AddGroupDto groupDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var group = new Group
+            {
+                Name = groupDto.Name
+            };
+
+           await _unitOfWork.Group.Add(group);
+            _unitOfWork.Save();
+
+            return Ok(group);
+        }
+        [HttpGet("groups/{groupId}/permissions")]
+        public async Task<IActionResult> GetGroupPermissions(int groupId)
+        {
+            var group = await _unitOfWork.Group.GetGroupWithPermissions(groupId);
+
+            if (group == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(group);
+        }
+
+
+
+
+
+
     }
 }

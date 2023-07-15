@@ -1,4 +1,6 @@
 using AuthenticationAuthorizationProject.DataAccess.Data;
+using AuthenticationAuthorizationProject.DataAccess.Repository.IRepository;
+using AuthenticationAuthorizationProject.DataAccess.Repository;
 using AuthenticationAuthorizationProject.DataAccess.Services;
 using AuthenticationAuthorizationProject.Helpers;
 using AuthenticationAuthorizationProject.Models;
@@ -7,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +20,12 @@ builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IAuthServices, AuthServices>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+    });
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 builder.Services.AddAuthentication(options =>
 {

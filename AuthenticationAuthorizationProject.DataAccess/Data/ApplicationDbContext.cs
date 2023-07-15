@@ -1,4 +1,5 @@
 ﻿using AuthenticationAuthorizationProject.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -17,21 +18,19 @@ namespace AuthenticationAuthorizationProject.DataAccess.Data
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             base.OnModelCreating(modelBuilder);
 
-            // Configure many-to-many relationship between Group and Permission
-            modelBuilder.Entity<GroupPermission>()
-                .HasKey(gp => new { gp.GroupId, gp.PermissionId });
-
-            modelBuilder.Entity<GroupPermission>()
-                .HasOne(gp => gp.Group)
-                .WithMany()
+            modelBuilder.Entity<Group>()
+                .HasMany(g => g.GroupPermissions)
+                .WithOne(gp => gp.Group)
                 .HasForeignKey(gp => gp.GroupId);
 
             modelBuilder.Entity<GroupPermission>()
                 .HasOne(gp => gp.Permission)
-                .WithMany()
+                .WithMany(p => p.GroupPermissions)
                 .HasForeignKey(gp => gp.PermissionId);
+
         }
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<Group> Groups { get; set; }
