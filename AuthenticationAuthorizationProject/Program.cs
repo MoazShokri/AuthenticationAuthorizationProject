@@ -10,6 +10,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
+using AuthenticationAuthorizationProject.Filter;
+using Microsoft.AspNetCore.Authorization;
+using AuthenticationAuthorizationProject.Constants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +24,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IAuthServices, AuthServices>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+builder.Services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -61,7 +67,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+//app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -6,6 +6,7 @@ using AuthenticationAuthorizationProject.Dtos.GroupPermissionDto;
 using AuthenticationAuthorizationProject.Dtos.PermissionDto;
 using AuthenticationAuthorizationProject.Models;
 using AuthenticationAuthorizationProject.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -28,13 +29,13 @@ namespace AuthenticationAuthorizationProject.Controllers
             this._userManager = userManager;
             this._unitOfWork = unitOfWork;
         }
-        [HttpGet]
+        [HttpGet("GetAllRoles")]
         public async Task<IActionResult> GetAllRoles()
         {
             var Roles = await _roleManager.Roles.ToListAsync();
             return Ok(Roles);
         }
-        [HttpPost]
+        [HttpPost("AddRole")]
         public async Task<IActionResult> Add(RoleFormViewModel model)
         {
             if (!ModelState.IsValid)
@@ -50,7 +51,8 @@ namespace AuthenticationAuthorizationProject.Controllers
 
             return Ok(model);
         }
-        [HttpGet("managepermissions")]
+        // TODO : Permission to Roles
+        [HttpGet("GetPermissionsToRoleId")]
         public async Task<IActionResult> ManagePermissions(string roleId)
         {
             var role = await _roleManager.FindByIdAsync(roleId);
@@ -77,7 +79,7 @@ namespace AuthenticationAuthorizationProject.Controllers
 
             return Ok(viewModel);
         }
-        [HttpPost("addpermissions/Claims")]
+        [HttpPost("AddPermissions/Claims")]
         public async Task<IActionResult> ManagePermissions(PermissionsFormViewModel model)
         {
             var role = await _roleManager.FindByIdAsync(model.RoleId);
@@ -86,24 +88,25 @@ namespace AuthenticationAuthorizationProject.Controllers
                 return NotFound();
 
             var roleClaims = await _roleManager.GetClaimsAsync(role);
+            //TODO : Select CheckBox 
 
-            foreach (var claim in roleClaims)
-                await _roleManager.RemoveClaimAsync(role, claim);
+            //foreach (var claim in roleClaims)
+            //    await _roleManager.RemoveClaimAsync(role, claim);
 
             var selectedClaims = model.RoleCalims.Where(c => c.IsSelected).ToList();
 
             foreach (var claim in selectedClaims)
-                await _roleManager.AddClaimAsync(role, new Claim("Permission", claim.DisplayValue));
+                await _roleManager.AddClaimAsync(role, new Claim("Permissions", claim.DisplayValue));
 
             return Ok(model);
         }
-        [HttpGet("getpermissions")]
+        [HttpGet("GetPermissions")]
         public async Task<IActionResult> GetPermissions()
         {
             var permissions = await _unitOfWork.Permission.GetAll();
             return Ok(permissions);
         }
-        [HttpPost("permissions")]
+        [HttpPost("AddPermissions")]
         public IActionResult AddPermission([FromBody] AddPermissionDto permissionDto)
         {
             if (!ModelState.IsValid)
@@ -121,13 +124,13 @@ namespace AuthenticationAuthorizationProject.Controllers
 
             return Ok(permission);
         }
-        [HttpGet("getgroup")]
+        [HttpGet("GetGroup")]
         public async Task<IActionResult> GetGroups()
         {
             var groups = await _unitOfWork.Group.GetAll();
             return Ok(groups);
         }
-        [HttpPost("addgroup")]
+        [HttpPost("AddGroup")]
         public async Task<IActionResult> AddGroup([FromBody] AddGroupDto groupDto)
         {
             if (!ModelState.IsValid)
@@ -145,7 +148,7 @@ namespace AuthenticationAuthorizationProject.Controllers
 
             return Ok(group);
         }
-        [HttpGet("groups/{groupId}/permissions")]
+        [HttpGet("Groups/{GroupId}/Permissions")]
         public async Task<IActionResult> GetGroupPermissions(int groupId)
         {
             var group = await _unitOfWork.Group.GetGroupWithPermissions(groupId);
