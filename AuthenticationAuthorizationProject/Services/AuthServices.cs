@@ -112,7 +112,16 @@ namespace AuthenticationAuthorizationProject.DataAccess.Services
             var roleClaims = new List<Claim>();
 
             foreach (var role in roles)
-                roleClaims.Add(new Claim("roles", role));
+            {
+                var getrole = await _roleManager.FindByNameAsync(role);
+                if (getrole != null)
+                {
+                  var r =  _roleManager.GetClaimsAsync(getrole).Result.ToList();
+                    roleClaims.AddRange(r);
+                }
+            }
+                 
+
 
             var claims = new[]
             {

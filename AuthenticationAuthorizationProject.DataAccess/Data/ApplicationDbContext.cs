@@ -16,24 +16,6 @@ namespace AuthenticationAuthorizationProject.DataAccess.Data
         {
                 
         }
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-
-            base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<Group>()
-                .HasMany(g => g.GroupPermissions)
-                .WithOne(gp => gp.Group)
-                .HasForeignKey(gp => gp.GroupId);
-
-            modelBuilder.Entity<GroupPermission>()
-                .HasOne(gp => gp.Permission)
-                .WithMany(p => p.GroupPermissions)
-                .HasForeignKey(gp => gp.PermissionId);
-
-        }
-        public DbSet<Permission> Permissions { get; set; }
-        public DbSet<Group> Groups { get; set; }
-        public DbSet<GroupPermission> GroupPermissions { get; set; }
+       
     }
 }

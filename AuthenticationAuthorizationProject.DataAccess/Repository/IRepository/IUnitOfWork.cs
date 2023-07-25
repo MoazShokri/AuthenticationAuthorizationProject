@@ -8,9 +8,7 @@ namespace AuthenticationAuthorizationProject.DataAccess.Repository.IRepository
 {
     public interface IUnitOfWork
     {
-        public IPermissionRepository Permission { get; }
-        public IGroupRepository Group { get; }
-        public IGroupPermissionRepository GroupPermission { get; }
+      
 
 
         void Save();    

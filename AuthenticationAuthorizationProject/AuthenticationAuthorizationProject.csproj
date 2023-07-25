@@ -29,4 +29,8 @@
     <ProjectReference Include="..\AuthenticationAuthorizationProject.DataAccess\AuthenticationAuthorizationProject.DataAccess.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Dtos\" />
+  </ItemGroup>
+
 </Project>

@@ -31,6 +31,7 @@ namespace AuthenticationAuthorizationProject.Controllers
             return Ok(result);
         }
         [HttpPost("token")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetTokenAsync([FromBody] TokenRequestModel model)
         {
             if (!ModelState.IsValid)

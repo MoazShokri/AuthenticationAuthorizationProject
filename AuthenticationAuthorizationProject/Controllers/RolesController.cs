@@ -1,16 +1,10 @@
 ﻿using AuthenticationAuthorizationProject.Constants;
-using AuthenticationAuthorizationProject.DataAccess.Data;
 using AuthenticationAuthorizationProject.DataAccess.Repository.IRepository;
-using AuthenticationAuthorizationProject.Dtos.GroupDto;
-using AuthenticationAuthorizationProject.Dtos.GroupPermissionDto;
-using AuthenticationAuthorizationProject.Dtos.PermissionDto;
 using AuthenticationAuthorizationProject.Models;
 using AuthenticationAuthorizationProject.ViewModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using System.Security.Claims;
 
 namespace AuthenticationAuthorizationProject.Controllers
@@ -100,66 +94,66 @@ namespace AuthenticationAuthorizationProject.Controllers
 
             return Ok(model);
         }
-        [HttpGet("GetPermissions")]
-        public async Task<IActionResult> GetPermissions()
-        {
-            var permissions = await _unitOfWork.Permission.GetAll();
-            return Ok(permissions);
-        }
-        [HttpPost("AddPermissions")]
-        public IActionResult AddPermission([FromBody] AddPermissionDto permissionDto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+        //[HttpGet("GetPermissions")]
+        //public async Task<IActionResult> GetPermissions()
+        //{
+        //    var permissions = await _unitOfWork.Permission.GetAll();
+        //    return Ok(permissions);
+        //}
+        //[HttpPost("AddPermissions")]
+        //public IActionResult AddPermission([FromBody] AddPermissionDto permissionDto)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
 
-            var permission = new Permission
-            {
-                Name = permissionDto.Name
-            };
+        //    var permission = new Permission
+        //    {
+        //        Name = permissionDto.Name
+        //    };
 
-            _unitOfWork.Permission.Add(permission);
-            _unitOfWork.Save();
+        //    _unitOfWork.Permission.Add(permission);
+        //    _unitOfWork.Save();
 
-            return Ok(permission);
-        }
-        [HttpGet("GetGroup")]
-        public async Task<IActionResult> GetGroups()
-        {
-            var groups = await _unitOfWork.Group.GetAll();
-            return Ok(groups);
-        }
-        [HttpPost("AddGroup")]
-        public async Task<IActionResult> AddGroup([FromBody] AddGroupDto groupDto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+        //    return Ok(permission);
+        //}
+        //[HttpGet("GetGroup")]
+        //public async Task<IActionResult> GetGroups()
+        //{
+        //    var groups = await _unitOfWork.Group.GetAll();
+        //    return Ok(groups);
+        //}
+        //[HttpPost("AddGroup")]
+        //public async Task<IActionResult> AddGroup([FromBody] AddGroupDto groupDto)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest(ModelState);
+        //    }
 
-            var group = new Group
-            {
-                Name = groupDto.Name
-            };
+        //    var group = new Group
+        //    {
+        //        Name = groupDto.Name
+        //    };
 
-           await _unitOfWork.Group.Add(group);
-            _unitOfWork.Save();
+        //   await _unitOfWork.Group.Add(group);
+        //    _unitOfWork.Save();
 
-            return Ok(group);
-        }
-        [HttpGet("Groups/{GroupId}/Permissions")]
-        public async Task<IActionResult> GetGroupPermissions(int groupId)
-        {
-            var group = await _unitOfWork.Group.GetGroupWithPermissions(groupId);
+        //    return Ok(group);
+        //}
+        //[HttpGet("Groups/{GroupId}/Permissions")]
+        //public async Task<IActionResult> GetGroupPermissions(int groupId)
+        //{
+        //    var group = await _unitOfWork.Group.GetGroupWithPermissions(groupId);
 
-            if (group == null)
-            {
-                return NotFound();
-            }
+        //    if (group == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return Ok(group);
-        }
+        //    return Ok(group);
+        //}
 
 
 

@@ -27,9 +27,9 @@ namespace AuthenticationAuthorizationProject.Constants
         }
         public static class Factory
         {
-            public const string View = "Permissions.Factory.View";
+            public const string View   = "Permissions.Factory.View";
             public const string Create = "Permissions.Factory.Create";
-            public const string Edit = "Permissions.Factory.Edit";
+            public const string Edit   = "Permissions.Factory.Edit";
             public const string Delete = "Permissions.Factory.Delete";
         }
     }
