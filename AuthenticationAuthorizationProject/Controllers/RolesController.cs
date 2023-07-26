@@ -1,10 +1,14 @@
 ﻿using AuthenticationAuthorizationProject.Constants;
 using AuthenticationAuthorizationProject.DataAccess.Repository.IRepository;
+using AuthenticationAuthorizationProject.Model;
 using AuthenticationAuthorizationProject.Models;
 using AuthenticationAuthorizationProject.ViewModels;
+using Azure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 using System.Security.Claims;
 
 namespace AuthenticationAuthorizationProject.Controllers
@@ -16,18 +20,33 @@ namespace AuthenticationAuthorizationProject.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
+        protected APIResponse _response;
+
 
         public RolesController(RoleManager<IdentityRole> roleManager , UserManager<ApplicationUser> userManager , IUnitOfWork unitOfWork)
         {
             this._roleManager = roleManager;
             this._userManager = userManager;
             this._unitOfWork = unitOfWork;
+            _response = new();
         }
-        [HttpGet("GetAllRoles")]
+      
+		[HttpGet("GetAllRoles")]
         public async Task<IActionResult> GetAllRoles()
         {
             var Roles = await _roleManager.Roles.ToListAsync();
-            return Ok(Roles);
+            if(Roles == null || Roles.Count == 0)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add("Role is not  exist");
+                return BadRequest(_response);
+            }
+            _response.StatusCode = HttpStatusCode.OK;
+            _response.IsSuccess = true;
+            _response.Result = Roles;
+            return Ok(_response);
+           
         }
         [HttpPost("AddRole")]
         public async Task<IActionResult> Add(RoleFormViewModel model)
@@ -94,66 +113,6 @@ namespace AuthenticationAuthorizationProject.Controllers
 
             return Ok(model);
         }
-        //[HttpGet("GetPermissions")]
-        //public async Task<IActionResult> GetPermissions()
-        //{
-        //    var permissions = await _unitOfWork.Permission.GetAll();
-        //    return Ok(permissions);
-        //}
-        //[HttpPost("AddPermissions")]
-        //public IActionResult AddPermission([FromBody] AddPermissionDto permissionDto)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    var permission = new Permission
-        //    {
-        //        Name = permissionDto.Name
-        //    };
-
-        //    _unitOfWork.Permission.Add(permission);
-        //    _unitOfWork.Save();
-
-        //    return Ok(permission);
-        //}
-        //[HttpGet("GetGroup")]
-        //public async Task<IActionResult> GetGroups()
-        //{
-        //    var groups = await _unitOfWork.Group.GetAll();
-        //    return Ok(groups);
-        //}
-        //[HttpPost("AddGroup")]
-        //public async Task<IActionResult> AddGroup([FromBody] AddGroupDto groupDto)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return BadRequest(ModelState);
-        //    }
-
-        //    var group = new Group
-        //    {
-        //        Name = groupDto.Name
-        //    };
-
-        //   await _unitOfWork.Group.Add(group);
-        //    _unitOfWork.Save();
-
-        //    return Ok(group);
-        //}
-        //[HttpGet("Groups/{GroupId}/Permissions")]
-        //public async Task<IActionResult> GetGroupPermissions(int groupId)
-        //{
-        //    var group = await _unitOfWork.Group.GetGroupWithPermissions(groupId);
-
-        //    if (group == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return Ok(group);
-        //}
 
 
 

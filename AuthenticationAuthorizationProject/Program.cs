@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 using AuthenticationAuthorizationProject.Constants;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Mvc.Filters;
+using AuthenticationAuthorizationProject;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,10 +25,13 @@ builder.Services.AddControllers();
 builder.Services.Configure<JWT>(builder.Configuration.GetSection("JWT"));
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddResponseCaching();
 builder.Services.AddScoped<IAuthServices, AuthServices>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
 builder.Services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+builder.Services.AddAutoMapper(typeof(MappingConfig));
+
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

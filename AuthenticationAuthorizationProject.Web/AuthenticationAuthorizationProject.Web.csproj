@@ -6,4 +6,21 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.9" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.32.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.8" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AuthenticationAuthorizationProject.DataAccess\AuthenticationAuthorizationProject.DataAccess.csproj" />
+    <ProjectReference Include="..\AuthenticationAuthorizationProject.Models\AuthenticationAuthorizationProject.Models.csproj" />
+    <ProjectReference Include="..\AuthenticationAuthorizationProject.Utility\AuthenticationAuthorizationProject.Utility.csproj" />
+    <ProjectReference Include="..\AuthenticationAuthorizationProject\AuthenticationAuthorizationProject.csproj" />
+  </ItemGroup>
+
 </Project>
