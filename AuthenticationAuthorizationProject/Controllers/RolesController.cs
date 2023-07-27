@@ -48,10 +48,47 @@ namespace AuthenticationAuthorizationProject.Controllers
             return Ok(_response);
            
         }
-        [HttpPost("AddRole")]
+		[HttpGet("GetRoleById")]
+		public async Task<ActionResult<APIResponse>> GetRoleById(string roleId)
+		{
+			var role = await _roleManager.FindByIdAsync(roleId);
+            try {
+				if (role == null)
+				{
+					_response.StatusCode = HttpStatusCode.NotFound;
+					_response.IsSuccess = false;
+					_response.ErrorMessages.Add("Role not found");
+					return NotFound(_response);
+
+				}
+				var roleViewModel = new RoleFormViewModel
+				{
+
+					Name = role.Name
+				};
+
+				_response.StatusCode = HttpStatusCode.OK;
+				_response.IsSuccess = true;
+				_response.Result = roleViewModel;
+				return Ok(_response);
+			}
+            catch(Exception ex)
+            {
+
+				_response.IsSuccess = false;
+				_response.ErrorMessages
+					 = new List<string>() { ex.ToString() };
+			}
+
+            return _response;
+
+		}
+	
+	[HttpPost("AddRole")]
         public async Task<IActionResult> Add(RoleFormViewModel model)
         {
             if (!ModelState.IsValid)
+
                 return BadRequest(await _roleManager.Roles.ToListAsync());
 
             if (await _roleManager.RoleExistsAsync(model.Name))
@@ -64,8 +101,46 @@ namespace AuthenticationAuthorizationProject.Controllers
 
             return Ok(model);
         }
-        // TODO : Permission to Roles
-        [HttpGet("GetPermissionsToRoleId")]
+		[HttpDelete("DeleteRole")]
+		public async Task<ActionResult<APIResponse>> DeleteRole(string roleId)
+		{
+			var role = await _roleManager.FindByIdAsync(roleId);
+			if (role == null)
+			{
+				_response.StatusCode = HttpStatusCode.NotFound;
+				_response.IsSuccess = false;
+				_response.ErrorMessages.Add("Role not found");
+				return NotFound(_response);
+			}
+
+			// Check if there are any users in this role
+			var usersInRole = await _userManager.GetUsersInRoleAsync(role.Name);
+			if (usersInRole.Count > 0)
+			{
+				_response.StatusCode = HttpStatusCode.NotFound;
+				_response.IsSuccess = false;
+				_response.ErrorMessages.Add(" dont can delete role ");
+				return NotFound(_response);
+			}
+
+			// Delete the role
+			var result = await _roleManager.DeleteAsync(role);
+			if (!result.Succeeded)
+			{
+				_response.StatusCode = HttpStatusCode.NotFound;
+				_response.IsSuccess = false;
+				_response.ErrorMessages.Add(" dont can delete role ");
+				return NotFound(_response);
+			}
+			_response.StatusCode = HttpStatusCode.OK;
+			_response.IsSuccess = true;
+			_response.Result = result;
+			return Ok(_response);
+
+		}
+
+		// TODO : Permission to Roles
+		[HttpGet("GetPermissionsToRoleId")]
         public async Task<IActionResult> ManagePermissions(string roleId)
         {
             var role = await _roleManager.FindByIdAsync(roleId);

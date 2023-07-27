@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using System.Text.Json.Serialization;
 using AuthenticationAuthorizationProject.Filter;
+using AuthenticationAuthorizationProject.Constants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,7 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddHttpClient<IAuthService, AuthService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddDistributedMemoryCache();
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
               .AddCookie(options =>
               {
@@ -30,7 +32,17 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
                   options.SlidingExpiration = true;
               });
 
-
+builder.Services.AddAuthorization(options =>
+{
+	options.AddPolicy(Permissions.Factory.View, policy =>
+	{
+		policy.RequireAuthenticatedUser(); // Example requirement, adjust as needed.
+	});
+	options.AddPolicy(Permissions.Factory.Delete, policy =>
+	{
+		policy.RequireAuthenticatedUser(); // Example requirement, adjust as needed.
+	});
+});
 
 builder.Services.AddSession(options =>
 {
@@ -38,6 +50,7 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
 
 
 var app = builder.Build();
@@ -56,6 +69,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.UseSession();
 app.MapControllerRoute(
     name: "default",

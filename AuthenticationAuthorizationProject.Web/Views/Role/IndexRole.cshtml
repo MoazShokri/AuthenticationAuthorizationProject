@@ -30,8 +30,8 @@
 					<td>@item.Name</td>
 					
 					<td>
-						<a asp-controller="Role" asp-action="UpdateRole" class="btn btn-success"><i class="bi bi-pencil-square"></i>Edit</a>
-						<a asp-controller="Role" asp-action="DeleteRole"  class="btn btn-danger"><i class="bi bi-trash-fill"></i>Delete</a>
+						<a asp-controller="Role" asp-action="UpdateRole" asp-route-roleId="@item.Id" class="btn btn-success"><i class="bi bi-pencil-square"></i>Edit</a>
+						<a asp-controller="Role" asp-action="DeleteRole" asp-route-roleId="@item.Id" class="btn btn-danger"><i class="bi bi-trash-fill"></i>Delete</a>
 					</td>
 				</tr>
 			}

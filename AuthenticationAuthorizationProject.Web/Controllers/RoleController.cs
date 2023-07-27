@@ -1,4 +1,5 @@
-﻿using AuthenticationAuthorizationProject.Constants;
+﻿
+using AuthenticationAuthorizationProject.Constants;
 using AuthenticationAuthorizationProject.Utility;
 using AuthenticationAuthorizationProject.Web.Services.IServices;
 using AuthenticationAuthorizationProject.Web.ViewModels;
@@ -20,7 +21,7 @@ namespace AuthenticationAuthorizationProject.Web.Controllers
            
         }
         [Authorize(Permissions.Factory.View)]
-        public async Task<IActionResult> IndexRole(string roleId)
+        public async Task<IActionResult> IndexRole()
         {
 
             List<ListOfRole> list = new();
@@ -53,6 +54,31 @@ namespace AuthenticationAuthorizationProject.Web.Controllers
             TempData["error"] = "Error encountered.";
             return View(model);
         }
+        [HttpGet]
+		public async Task<IActionResult> DeleteRole(string roleId)
+        {
+            var response = await _roleService.GetAsync<APIResponse>(roleId, HttpContext.Session.GetString(SD.SessionToken));
+            if (response != null && response.IsSuccess)
+            {
+                ListOfRole model = JsonConvert.DeserializeObject<ListOfRole>(Convert.ToString(response.Result));
+                return View(model);
+            }
+            return NotFound();
+        }
+        [HttpPost]
+		public async Task<IActionResult> DeleteRole(ListOfRole model)
+        {
+
+            var response = await _roleService.DeleteAsync<APIResponse>(model.Id, HttpContext.Session.GetString(SD.SessionToken));
+            if (response != null && response.IsSuccess)
+            {
+                TempData["success"] = "Villa deleted successfully";
+                return RedirectToAction(nameof(IndexRole));
+            }
+            TempData["error"] = "Error encountered.";
+            return View(model);
+        }
+
     }
     
 }

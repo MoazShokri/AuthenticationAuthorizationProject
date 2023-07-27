@@ -26,7 +26,7 @@ namespace AuthenticationAuthorizationProject.Web.Services
             });
         }
 
-        public Task<T> GetAllAsync<T>(string token  )
+        public Task<T> GetAllAsync<T>(string token )
         {
             return SendAsync<T>(new APIRequest()
             {
@@ -36,11 +36,26 @@ namespace AuthenticationAuthorizationProject.Web.Services
                 
             });
         }
-       
 
-        //public Task<T> GetAsync<T>(int id, string token)
-        //{
+		public Task<T> DeleteAsync<T>(string roleId , string token)
+		{
+			return SendAsync<T>(new APIRequest()
+			{
+				ApiType = SD.ApiType.DELETE,
+				Url = roleUrl + "/api/Roles/DeleteRole?roleId=" + roleId,
+				Token = token
+			});
+		}
+		public Task<T> GetAsync<T>(string roleId ,  string token)
+		{
+			return SendAsync<T>(new APIRequest()
+             
 
-        //}
-    }
+			{
+				ApiType = SD.ApiType.GET,
+				Url = roleUrl + "/api/Roles/GetRoleById?roleId=" + roleId,
+				Token = token
+			});
+		}
+	}
 }
